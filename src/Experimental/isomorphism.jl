@@ -1,7 +1,8 @@
-abstract type GraphMorphismProblem end
-struct IsomorphismProblem <: GraphMorphismProblem end
-struct SubGraphIsomorphismProblem <: GraphMorphismProblem end
-struct InducedSubGraphIsomorphismProblem <: GraphMorphismProblem end
+# Probably shouldn't include this here
+include("probleminterface.jl")
+
+abstract type GraphMorphismProblem{G} <: GraphProblem{G} end
+abstract type IsomorphismProblem{G} <: GraphMorphismProblem{G} end
 
 """
     IsomorphismAlgorithm
@@ -9,6 +10,36 @@ struct InducedSubGraphIsomorphismProblem <: GraphMorphismProblem end
 An abstract type used for method dispatch on isomorphism functions.
 """
 abstract type IsomorphismAlgorithm end
+
+# Todo: constructors
+# Make more DRY? :S
+
+struct SubgraphIsomorphismProblem{G} <: IsomorphismProblem{G} 
+    g1::G
+    g2::G
+    vertex_relation::Union{Nothing, Function}
+    edge_relation::Union{Nothing, Function}
+    alg::IsomorphismAlgorithm
+end
+
+SubgraphIsomorphismProblem(g1,g2; vertex_relation=nothing,edge_relation=nothing,alg=VF2()) = SubgraphIsomorphismProblem(g1,g2,vertex_relation,edge_relation,alg)
+
+struct InducedSubgraphIsomorphismProblem{G} <: IsomorphismProblem{G} 
+    g1::G
+    g2::G
+    vertex_relation::Union{Nothing, Function}
+    edge_relation::Union{Nothing, Function}
+    alg::IsomorphismAlgorithm
+end
+
+InducedSubgraphIsomorphismProblem(g1,g2; vertex_relation=nothing,edge_relation=nothing,alg=VF2()) = InducedSubgraphIsomorphismProblem(g1,g2,vertex_relation,edge_relation,alg)
+
+# p = SubgraphIsomorphismProblem(g,g)
+# 
+# any(p, alg::IsomorphismAlgorithm) # replace has_*
+# count(p, alg::IsomorphismAlgorithm) # replace count_*
+# collect(iterate(p, alg::IsomorphismAlgorithm)) # replace all_* - probably should just provide iterator so collect/enumerate Just Work
+
 
 
 """
@@ -88,6 +119,21 @@ function has_induced_subgraphisomorph(g1::AbstractGraph, g2::AbstractGraph, alg:
         has_induced_subgraphisomorph(g1, g2, alg; vertex_relation=vertex_relation, edge_relation=edge_relation)
 
 end
+
+function Base.any(p::GraphMorphismProblem)
+    any(p)
+end
+
+function Base.any(p::SubgraphIsomorphismProblem)
+    # alg must be specific as we dispatch on it
+    has_subgraphisomorph(p,p.alg)
+end
+
+function Base.any(p::InducedSubgraphIsomorphismProblem)
+    # alg must be specific as we dispatch on it
+    has_induced_subgraphisomorph(p,p.alg)
+end
+
 
 """
     has_subgraphisomorph(g1, g2, alg::IsomorphismAlgorithm=VF2(); vertex_relation=nothing, edge_relation=nothing)
