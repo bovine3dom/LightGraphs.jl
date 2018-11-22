@@ -13,6 +13,8 @@ abstract type IsomorphismAlgorithm end
 
 # Todo: constructors
 # Make more DRY? :S
+# - check why problem(self_loop, empty) |> any fails
+# - has_subgraphisomorph(g1, g2) leads to stack overflow - surely it should give an error?
 
 struct SubgraphIsomorphismProblem{G} <: IsomorphismProblem{G} 
     g1::G
@@ -81,45 +83,6 @@ function could_have_isomorph(g1::AbstractGraph, g2::AbstractGraph)
     return true
 end
 
-"""
-    has_induced_subgraphisomorph(g1, g2, alg::IsomorphismAlgorithm=VF2(); vertex_relation=nothing, edge_relation=nothing)
-
-Return `true` if the graph `g1` contains a vertex induced subgraph that is isomorphic to `g2`.
-
-### Optional Arguments
-- `alg`: The algorithm that is used to find the induced subgraph isomorphism. Can be only
-    `VF2()` at the moment.
-- `vertex_relation`: A binary function that takes a vertex from `g1` and one from `g2`. An
-    isomorphism only exists if this function returns `true` for all matched vertices.
-- `edge_relation`: A binary function that takes an edge from `g1` and one from `g2`. An
-    isomorphism only exists if this function returns `true` for all matched edges.
-
-### Examples
-```doctest.jl
-julia> has_induced_subgraphisomorph(CompleteGraph(5), CompleteGraph(4))
-true
-julia> has_induced_subgraphisomorph(CompleteGraph(5), CycleGraph(4))
-false
-
-julia> g1 = PathDiGraph(3); color1 = [1, 1, 1]
-julia> g2 = PathDiGraph(2); color2 = [1, 2]
-julia> color_rel(u, v) = (color1[u] == color2[v])
-julia> has_induced_subgraphisomorph(g1, g2)
-true
-julia> has_induced_subgraphisomorph(g1, g2, vertex_relation=color_rel)
-false
-```
-### See also 
-[`has_subgraphisomorph`](@ref), [`has_isomorph`](@ref), [`count_induced_subgraphisomorph`](@ref), [`all_induced_subgraphisomorph`](@ref)
-"""
-function has_induced_subgraphisomorph(g1::AbstractGraph, g2::AbstractGraph, alg::IsomorphismAlgorithm=VF2();
-                                 vertex_relation::Union{Nothing, Function}=nothing,
-                                 edge_relation::Union{Nothing, Function}=nothing)::Bool
-
-        has_induced_subgraphisomorph(g1, g2, alg; vertex_relation=vertex_relation, edge_relation=edge_relation)
-
-end
-
 function Base.any(p::GraphMorphismProblem)
     any(p)
 end
@@ -134,45 +97,6 @@ function Base.any(p::InducedSubgraphIsomorphismProblem)
     has_induced_subgraphisomorph(p,p.alg)
 end
 
-
-"""
-    has_subgraphisomorph(g1, g2, alg::IsomorphismAlgorithm=VF2(); vertex_relation=nothing, edge_relation=nothing)
-
-Return `true` if the graph `g1` contains a subgraph that is isomorphic to `g2`.
-
-### Optional Arguments
-- `alg`: The algorithm that is used to find the induced subgraph isomorphism. Can be only
-    `VF2()` at the moment.
-- `vertex_relation`: A binary function that takes a vertex from `g1` and one from `g2`. An
-    isomorphism only exists if this function returns `true` for all matched vertices.
-- `edge_relation`: A binary function that takes an edge from `g1` and one from `g2`. An
-    isomorphism only exists if this function returns `true` for all matched edges.
-
-### Examples
-```doctest.jl
-julia> has_subgraphisomorph(CompleteGraph(5), CompleteGraph(4))
-true
-julia> has_subgraphisomorph(CompleteGraph(5), CycleGraph(4))
-true
-
-julia> g1 = PathDiGraph(3); color1 = [1, 1, 1]
-julia> g2 = PathDiGraph(2); color2 = [1, 2]
-julia> color_rel(u, v) = (color1[u] == color2[v])
-julia> has_subgraphisomorph(g1, g2)
-true
-julia> has_subgraphisomorph(g1, g2, vertex_relation=color_rel)
-false
-```
-### See also 
-[`has_induced_subgraphisomorph`](@ref), [`has_isomorph`](@ref), [`count_subgraphisomorph`](@ref), [`all_subgraphisomorph`](@ref)
-"""
-function has_subgraphisomorph(g1::AbstractGraph, g2::AbstractGraph, alg::IsomorphismAlgorithm=VF2();
-                                 vertex_relation::Union{Nothing, Function}=nothing,
-                                 edge_relation::Union{Nothing, Function}=nothing)::Bool
-    has_subgraphisomorph(g1, g2, alg;
-        vertex_relation=vertex_relation,
-        edge_relation=edge_relation)
-end
 
 """
     has_isomorph(g1, g2, alg::IsomorphismAlgorithm=VF2(); vertex_relation=nothing, edge_relation=nothing)
