@@ -89,6 +89,8 @@ end
 
 function Base.any(p::SubgraphIsomorphismProblem)
     # alg must be specific as we dispatch on it
+    # Todo: this should become Base.any(p, p.alg)
+    # with the library exporting, e.g, Base.any(p, p.alg::VF2)
     has_subgraphisomorph(p,p.alg)
 end
 
