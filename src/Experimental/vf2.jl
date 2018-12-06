@@ -62,7 +62,7 @@ Luigi P. Cordella, Pasquale Foggia, Carlo Sansone, Mario Vento
 function vf2(callback::Function, problem::GraphMorphismProblem)
     g1 = problem.g1
     g2 = problem.g2
-    if nv(g1) < nv(g2) || (typeof(problem) == IsomorphismProblem && nv(g1) != nv(g2))
+    if nv(g1) < nv(g2) || (problem isa IsomorphismProblem && nv(g1) != nv(g2))
         return 
     end
 
@@ -81,7 +81,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                               vertex_relation::Union{Nothing, Function},
                               edge_relation::Union{Nothing, Function})
     @inline function vf2rule_pred(u, v, state::VF2State, problemtype)
-        if typeof(problemtype) == SubgraphIsomorphismProblem
+        if problemtype isa SubgraphIsomorphismProblem
             @inbounds for u2 in inneighbors(state.g1, u)
                 if state.core_1[u2] != 0
                     found = false
@@ -112,7 +112,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
     end
 
     @inline function vf2rule_succ(u, v, state::VF2State, problemtype)
-        if typeof(problemtype) == SubgraphIsomorphismProblem
+        if problemtype isa SubgraphIsomorphismProblem
             @inbounds for u2 in outneighbors(state.g1, u)
                 if state.core_1[u2] != 0
                     found = false
@@ -156,7 +156,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                 count2 += 1
             end
         end
-        if typeof(problemtype) == IsomorphismProblem
+        if problemtype isa IsomorphismProblem
             count1 == count2 || return false
         else
             count1 >= count2 || return false
@@ -173,7 +173,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                 count2 += 1
             end
         end
-        typeof(problemtype) == IsomorphismProblem && return count1 == count2   
+        problemtype isa IsomorphismProblem && return count1 == count2   
 
         return count1 >= count2   
     end
@@ -191,7 +191,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                 count2 += 1
             end
         end
-        if typeof(problemtype) == IsomorphismProblem
+        if problemtype isa IsomorphismProblem
             count1 == count2 || return false
         else
             count1 >= count2 || return false
@@ -209,13 +209,13 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                 count2 += 1
             end
         end
-        typeof(problemtype) == IsomorphismProblem && return count1 == count2   
+        problemtype isa IsomorphismProblem && return count1 == count2   
 
         return count1 >= count2   
     end
 
     @inline function vf2rule_new(u, v, state::VF2State, problemtype)
-        typeof(problemtype) == SubgraphIsomorphismProblem && return true
+        problemtype isa SubgraphIsomorphismProblem && return true
         count1 = 0
         count2 = 0
         @inbounds for u2 in inneighbors(state.g1, u)
@@ -228,7 +228,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                 count2 += 1
             end
         end
-        if typeof(problemtype) == IsomorphismProblem
+        if problemtype isa IsomorphismProblem
             count1 == count2 || return false
         else
             count1 >= count2 || return false
@@ -245,7 +245,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
                 count2 += 1
             end
         end
-        typeof(problemtype) == IsomorphismProblem && return count1 == count2   
+        problemtype isa IsomorphismProblem && return count1 == count2   
     
         return count1 >= count2
     end
@@ -254,7 +254,7 @@ function vf2check_feasibility(u, v, state::VF2State, problemtype,
         u_selflooped = has_edge(state.g1, u, u)
         v_selflooped = has_edge(state.g2, v, v)
 
-        if typeof(problemtype) == SubgraphIsomorphismProblem
+        if problemtype isa SubgraphIsomorphismProblem
             return u_selflooped || !v_selflooped
         end
         return u_selflooped == v_selflooped
