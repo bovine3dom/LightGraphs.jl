@@ -102,6 +102,9 @@ adjacency_matrix, laplacian_matrix, adjacency_spectrum, laplacian_spectrum,
 non_backtracking_matrix, incidence_matrix, Nonbacktracking,
 contract,
 
+# assortativity
+degree_mixing_matrix
+
 # persistence
 loadgraph, loadgraphs, savegraph, LGFormat,
 
@@ -249,6 +252,7 @@ include("centrality/katz.jl")
 include("centrality/pagerank.jl")
 include("centrality/eigenvector.jl")
 include("centrality/radiality.jl")
+include("assortativity/mixing.jl")
 include("community/modularity.jl")
 include("community/label_propagation.jl")
 include("community/core-periphery.jl")
